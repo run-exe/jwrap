@@ -99,7 +99,8 @@ public static class Program
             Misc.WriteBinaryFile($"{jarPath}.{timestamp}", jarData);
             File.Move($"{jarPath}.{timestamp}", jarPath);
         }
-        string jre = PrepareJre("zulu17-jre-17.40.19");
+        //string jre = PrepareJre("zulu17-jre-17.40.19");
+        string jre = PrepareJre("zulu8-jre-8.68.0.21");
         Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";
         Console.WriteLine(java);
@@ -173,7 +174,9 @@ public static class Program
             argList += Convert.ToBase64String(Encoding.UTF8.GetBytes(args[i]));
         }
         Console.WriteLine("["+argList+"]");
-        string jre = PrepareJre("zulu17-jre-17.40.19");
+        //string jre = PrepareJre("zulu17-jre-17.40.19");
+        string jre = PrepareJre("zulu8-jre-8.68.0.21");
+        //https://github.com/run-exe/jwrap/releases/download/jre/zulu8-jre-8.68.0.21.zip
         //Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";
         //Console.WriteLine(java);
