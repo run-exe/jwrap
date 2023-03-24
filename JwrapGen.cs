@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 #if JWRAP_GEN
 namespace jwrap;
@@ -47,10 +48,12 @@ public class JwrapGen
                     {
                         throw new Exception($"File is not jar: {options.FilePath}");
                     }
+
                     if (!File.Exists(options.FilePath))
                     {
                         throw new Exception($"File not exist: {options.FilePath}");
                     }
+
                     byte[] jarData = Misc.ReadBinaryFile(options.FilePath);
                     string exePath = Regex.Replace(options.FilePath, "[.]jar$", ".exe");
                     Console.WriteLine(exePath);
@@ -63,6 +66,16 @@ public class JwrapGen
                     string mainClass = options.main;
                     if (mainClass == null) mainClass = "global.Main";
                     Win32Res.WriteResourceData(exePath, "JWRAP", "MAIN", Encoding.UTF8.GetBytes(mainClass));
+                    //Console.WriteLine(Convert.ToBase64String(jarData));
+                    XElement root = new XElement("xml",
+                        new XElement("main", mainClass),
+                        new XElement("guid", Misc.GetGuidString()),
+                        new XElement("sha512", Misc.GetSha512String(jarData)),
+                        new XElement("jar", Convert.ToBase64String(jarData))
+                    );
+                    XDocument doc = new XDocument(root);
+                    //Console.WriteLine(doc.ToString());
+                    Win32Res.WriteResourceData(exePath, "JWRAP", "XML", Encoding.UTF8.GetBytes(doc.ToString()));
                 });
             //SeparateMain(args);
         }
@@ -71,6 +84,5 @@ public class JwrapGen
             Console.WriteLine(e.ToString());
         }
     }
-
 }
 #endif

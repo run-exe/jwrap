@@ -1,17 +1,15 @@
 #if !JWRAP_GEN
 namespace jwrap;
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
-using System;
-using System.Linq;
-using System.Reflection;
+using System.Xml.Linq;
 
 public static class Program
 {
@@ -69,6 +67,9 @@ public static class Program
             argList += $"\"{args[i]}\"";
         }
 
+        string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
+        XDocument doc = XDocument.Parse(xml);
+        Console.WriteLine(doc.ToString());
         byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
         Console.WriteLine($"jarData={jarData.Length}");
         string guid = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID"));
