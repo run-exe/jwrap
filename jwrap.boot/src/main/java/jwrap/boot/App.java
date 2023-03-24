@@ -7,11 +7,14 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Base64;
 
 public class App {
 	public static void main(String[] args) {
+		//System.out.println("java.library.path=" + System.getProperty("java.library.path"));
 		String jar = null;
 		String main = null;
 		String[] arguments = null;
@@ -35,6 +38,9 @@ public class App {
 				break;
 			}
 		}
+		String parentDir = getParentDirPath(jar);
+		System.setProperty("java.library.path", parentDir + ";" + System.getProperty("java.library.path"));
+		System.out.println("java.library.path=" + System.getProperty("java.library.path"));
 		try {
 			URL url = (new File(jar)).toURI().toURL();
 			URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { url });
@@ -59,5 +65,11 @@ public class App {
 			result[i] = parseStringArg(args[i]);
 		}
 		return result;
+	}
+
+	private static String getParentDirPath(String filePath) {
+		Path path = Paths.get(filePath);
+		Path parentPath = path.getParent();
+		return parentPath.toString();
 	}
 }
