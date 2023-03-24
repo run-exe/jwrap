@@ -72,9 +72,11 @@ public static class Program
         string java = $@"{jre}\bin\java.exe";
         Console.WriteLine(java);
         Console.WriteLine(File.Exists(java));
+        string mainClass = Win32Api.LoadString(1);
+        if (mainClass == "") mainClass = "global.Main";
         string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
         Console.WriteLine(jarFile);
-        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarFile}\" global.Main {argList}");
+        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarFile}\" {mainClass} {argList}");
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
         psi.UseShellExecute = false;
