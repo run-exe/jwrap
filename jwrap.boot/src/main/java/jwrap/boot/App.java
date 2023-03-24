@@ -66,10 +66,8 @@ public class App {
 		}
 		catch(Exception e)
 		{
-			
 		}
 
-		/*
 		System.setProperty("java.library.path", parentDir + ";" + System.getProperty("java.library.path"));
 		System.out.println("java.library.path=" + System.getProperty("java.library.path"));
 		try {
@@ -79,7 +77,7 @@ public class App {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		*/
+
 		try {
 			URL url = (new File(jar)).toURI().toURL();
 			URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { url });
