@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 
 #if JWRAP_GEN
 namespace jwrap;
@@ -46,20 +47,22 @@ public class JwrapGen
                     {
                         throw new Exception($"File is not jar: {options.FilePath}");
                     }
-#if true
                     if (!File.Exists(options.FilePath))
                     {
                         throw new Exception($"File not exist: {options.FilePath}");
                     }
-#endif
+                    byte[] jarData = Misc.ReadBinaryFile(options.FilePath);
                     string exePath = Regex.Replace(options.FilePath, "[.]jar$", ".exe");
                     Console.WriteLine(exePath);
                     File.Delete(exePath);
                     File.Copy(headPath, exePath);
+                    Win32Res.WriteResourceData(exePath, "JWRAP", "JAR", jarData);
+                    Win32Res.WriteResourceData(exePath, "JWRAP", "GUID", Encoding.UTF8.GetBytes(Misc.GetGuidString()));
                     if (options.main != null)
                     {
                         Console.WriteLine("[" + options.main + "]");
-                        ProcessStartInfo psi = new ProcessStartInfo("rcedit-x64.exe", $"\"{exePath}\" --set-resource-string 1 {options.main}");
+                        ProcessStartInfo psi = new ProcessStartInfo("rcedit-x64.exe",
+                            $"\"{exePath}\" --set-resource-string 1 {options.main}");
                         psi.RedirectStandardOutput = true;
                         psi.RedirectStandardError = true;
                         psi.UseShellExecute = false;
@@ -84,74 +87,5 @@ public class JwrapGen
         }
     }
 
-#if JWRAP_HEAD
-    private static void SeparateMain(string[] args)
-    {
-        string argList = "";
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (i > 0) argList += " ";
-            argList += $"\"{args[i]}\"";
-        }
-        string jre = PrepareJre("zulu17-jre-17.40.19");
-        //Console.WriteLine(jre);
-        string java = $@"{jre}\bin\java.exe";
-        //Console.WriteLine(java);
-        //Console.WriteLine(File.Exists(java));
-        string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
-        Process process = new Process();
-        process.StartInfo.FileName = java;
-        process.StartInfo.Arguments = $"-cp \"{jarFile}\" global.Main {argList}";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.CreateNoWindow = true;
-        process.Start();
-        process.WaitForExit();
-        Environment.Exit(process.ExitCode);
-    }
-#else
-    private static void SeparateMain(string[] args)
-    {
-        string jarPath = args[0];
-        ArraySegment<string> arySeg = new ArraySegment<string>(args, 1, args.Length - 1);
-        args = arySeg.ToArray();
-        string argList = "";
-        for (int i = 0; i < args.Length; i++)
-        {
-            if (i > 0) argList += " ";
-            argList += $"\"{args[i]}\"";
-        }
-
-        string jre = "xxx"; //PrepareJre("zulu17-jre-17.40.19");
-        //Console.WriteLine(jre);
-        string java = $@"{jre}\bin\java.exe";
-        //Console.WriteLine(java);
-        //Console.WriteLine(File.Exists(java));
-        Process process = new Process();
-        process.StartInfo.FileName = java;
-        process.StartInfo.Arguments = $"-cp \"{jarPath}\" global.Main {argList}";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.CreateNoWindow = true;
-        process.Start();
-        process.WaitForExit();
-        Environment.Exit(process.ExitCode);
-    }
-#endif
-    private static void DownloadBinaryFromUrl(string url, string destinationPath)
-    {
-        WebRequest objRequest = System.Net.HttpWebRequest.Create(url);
-        var objResponse = objRequest.GetResponse();
-        byte[] buffer = new byte[32768];
-        using (Stream input = objResponse.GetResponseStream())
-        {
-            using (FileStream output = new FileStream(destinationPath, FileMode.CreateNew))
-            {
-                int bytesRead;
-                while ((bytesRead = input.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    output.Write(buffer, 0, bytesRead);
-                }
-            }
-        }
-    }
 }
 #endif

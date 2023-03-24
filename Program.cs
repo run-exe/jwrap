@@ -1,12 +1,13 @@
 #if !JWRAP_GEN
+namespace jwrap;
+
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-
-namespace jwrap;
 
 using System;
 using System.Linq;
@@ -67,6 +68,12 @@ public static class Program
             if (i > 0) argList += " ";
             argList += $"\"{args[i]}\"";
         }
+
+        byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
+        Console.WriteLine($"jarData={jarData.Length}");
+        byte[] guidData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID");
+        string guidString = Encoding.UTF8.GetString(guidData);
+        Console.WriteLine($"guid={guidString}");
         string jre = PrepareJre("zulu17-jre-17.40.19");
         Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";

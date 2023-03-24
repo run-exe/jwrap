@@ -9,6 +9,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Prefer32Bit>false</Prefer32Bit>
     <Version>0.0.0.0</Version>
+    <ApplicationIcon>java.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <Reference Include="Microsoft.CSharp" />
@@ -21,6 +22,9 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <!--
+    <PackageReference Include="JavaCommons" Version="2023.322.410.44" />
+    -->
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
   </ItemGroup>
   <PropertyGroup>
