@@ -1,3 +1,5 @@
+using System.Xml.XPath;
+
 #if !JWRAP_GEN
 namespace jwrap;
 
@@ -69,14 +71,22 @@ public static class Program
 
         string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
         XDocument doc = XDocument.Parse(xml);
-        Console.WriteLine(doc.ToString());
-        byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
+        //Console.WriteLine(doc.ToString());
+        var root = doc.Root;
+        Console.WriteLine(root.XPathSelectElement("./main"));
+        Console.WriteLine(root.XPathSelectElement("./guid"));
+        Console.WriteLine(root.XPathSelectElement("./sha512"));
+        //byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
+        byte[] jarData = Convert.FromBase64String(root.XPathSelectElement("./jar").Value);
         Console.WriteLine($"jarData={jarData.Length}");
-        string guid = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID"));
-        string sha512 = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "SHA512"));
+        //string guid = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID"));
+        string guid = root.XPathSelectElement("./guid").Value;
+        //string sha512 = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "SHA512"));
+        string sha512 = root.XPathSelectElement("./sha512").Value;
         Console.WriteLine($"guid={guid}");
         Console.WriteLine($"sha512={sha512}");
-        string mainClass = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "MAIN"));
+        //string mainClass = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "MAIN"));
+        string mainClass = root.XPathSelectElement("./main").Value;
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         //Console.WriteLine(profilePath);
         var rootPath = $"{profilePath}\\.jwap\\.jar";
