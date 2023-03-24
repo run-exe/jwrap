@@ -41,42 +41,6 @@ public class App {
 		}
 		System.out.println("new File(jar).exists() = " + new File(jar).exists());
 		String parentDir = getParentDirPath(jar);
-		
-		String newPath = parentDir;
-
-		try
-		{
-			Field usr_paths = ClassLoader.class.getDeclaredField("usr_paths");
-			usr_paths.setAccessible(true);
-
-			// 現在の検索パスを取得します。
-			String[] paths = (String[])usr_paths.get(null);
-
-			// すでに検索パスに含まれていたら何もせずに復帰します。
-			for(String path : paths) {
-				if(path.equals(newPath)) {
-					return;
-				}
-			}
-
-			// 検索パスを追加した配列を新しく作成して usr_paths に代入します。
-			String[] newPaths = Arrays.copyOf(paths, paths.length + 1);
-			newPaths[newPaths.length - 1] = newPath;
-			usr_paths.set(null, newPaths);		
-		}
-		catch(Exception e)
-		{
-		}
-
-		System.setProperty("java.library.path", parentDir + ";" + System.getProperty("java.library.path"));
-		System.out.println("java.library.path=" + System.getProperty("java.library.path"));
-		try {
-			Field fieldSysPath = ClassLoader.class.getDeclaredField("sys_paths");
-			fieldSysPath.setAccessible(true);
-			fieldSysPath.set(null, null);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 		try {
 			URL url = (new File(jar)).toURI().toURL();
