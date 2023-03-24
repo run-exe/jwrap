@@ -71,9 +71,19 @@ public static class Program
 
         byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
         Console.WriteLine($"jarData={jarData.Length}");
-        byte[] guidData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID");
-        string guidString = Encoding.UTF8.GetString(guidData);
-        Console.WriteLine($"guid={guidString}");
+        string guid = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID"));
+        string sha512 = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "SHA512"));
+        Console.WriteLine($"guid={guid}");
+        Console.WriteLine($"sha512={sha512}");
+        var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        //Console.WriteLine(profilePath);
+        var rootPath = $"{profilePath}\\.jwap\\.jar";
+        Directory.CreateDirectory(rootPath);
+        string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}.jar";
+        string timestamp = GetTimeStampString();
+        Misc.WriteBinaryFile($"{jarPath}.{timestamp}", jarData);
+        File.Move($"{jarPath}.{timestamp}", jarPath);
+        Console.WriteLine(jarPath);
         string jre = PrepareJre("zulu17-jre-17.40.19");
         Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";
@@ -82,9 +92,8 @@ public static class Program
         string mainClass = Win32Api.LoadString(1);
         if (mainClass == "") mainClass = "global.Main";
         Console.WriteLine(mainClass);
-        string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
-        Console.WriteLine(jarFile);
-        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarFile}\" {mainClass} {argList}");
+        //string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
+        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarPath}\" {mainClass} {argList}");
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
         psi.UseShellExecute = false;

@@ -57,6 +57,8 @@ public class JwrapGen
                     File.Delete(exePath);
                     File.Copy(headPath, exePath);
                     Win32Res.WriteResourceData(exePath, "JWRAP", "JAR", jarData);
+                    Win32Res.WriteResourceData(exePath, "JWRAP", "SHA512",
+                        Encoding.UTF8.GetBytes(Misc.GetSha512String(jarData)));
                     Win32Res.WriteResourceData(exePath, "JWRAP", "GUID", Encoding.UTF8.GetBytes(Misc.GetGuidString()));
                     if (options.main != null)
                     {

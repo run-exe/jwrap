@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace jwrap;
 
@@ -24,9 +26,30 @@ public class Misc
         }
     }
 
+    public static void WriteBinaryFile(string filePath, byte[] data)
+    {
+        using (FileStream fs = new FileStream(filePath, FileMode.Create))
+        {
+            using (BinaryWriter writer = new BinaryWriter(fs))
+            {
+                writer.Write(data);
+            }
+        }
+    }
+
     public static string GetGuidString()
     {
         Guid guid = Guid.NewGuid();
         return guid.ToString();
+    }
+
+    public static string GetSha512String(byte[] data)
+    {
+        using (SHA512 shaM = new SHA512Managed())
+        {
+            byte[] hashBytes = shaM.ComputeHash(data);
+            string hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+            return hashString;
+        }
     }
 }
