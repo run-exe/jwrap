@@ -74,6 +74,7 @@ public static class Program
         Console.WriteLine(File.Exists(java));
         string mainClass = Win32Api.LoadString(1);
         if (mainClass == "") mainClass = "global.Main";
+        Console.WriteLine(mainClass);
         string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
         Console.WriteLine(jarFile);
         ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarFile}\" {mainClass} {argList}");
