@@ -92,10 +92,13 @@ public static class Program
         var rootPath = $"{profilePath}\\.jwap\\.jar";
         Directory.CreateDirectory(rootPath);
         string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}.jar";
-        string timestamp = GetTimeStampString();
-        Misc.WriteBinaryFile($"{jarPath}.{timestamp}", jarData);
-        File.Move($"{jarPath}.{timestamp}", jarPath);
         Console.WriteLine(jarPath);
+        if (!File.Exists(jarPath))
+        {
+            string timestamp = GetTimeStampString();
+            Misc.WriteBinaryFile($"{jarPath}.{timestamp}", jarData);
+            File.Move($"{jarPath}.{timestamp}", jarPath);
+        }
         string jre = PrepareJre("zulu17-jre-17.40.19");
         Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";

@@ -16,8 +16,8 @@ public class Win32Res
     [DllImport("kernel32.dll", SetLastError = true)]
     static extern bool EndUpdateResource(IntPtr hUpdate, bool fDiscard);
 
-    [DllImport("kernel32.dll", SetLastError = true)]
-    static extern IntPtr LoadLibrary(string lpFileName);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode ,SetLastError = true)]
+    static extern IntPtr LoadLibraryW(string lpFileName);
 
     [DllImport("kernel32.dll", SetLastError = true)]
     static extern IntPtr FindResource(IntPtr hModule, string lpName, string lpType);
@@ -55,7 +55,7 @@ public class Win32Res
     public static byte[] ReadResourceData(string fileName, string resType, string resName)
     {
         Console.WriteLine($"ReadResourceData({fileName}, {resType}, {resName})");
-        IntPtr hModule = LoadLibrary(fileName);
+        IntPtr hModule = LoadLibraryW(fileName);
         if (hModule == IntPtr.Zero)
         {
             throw new Exception("Failed to load library.");
