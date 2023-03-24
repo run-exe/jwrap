@@ -59,13 +59,13 @@ public class JwrapGen
                     Console.WriteLine(exePath);
                     File.Delete(exePath);
                     File.Copy(headPath, exePath);
-                    Win32Res.WriteResourceData(exePath, "JWRAP", "JAR", jarData);
-                    Win32Res.WriteResourceData(exePath, "JWRAP", "SHA512",
-                        Encoding.UTF8.GetBytes(Misc.GetSha512String(jarData)));
-                    Win32Res.WriteResourceData(exePath, "JWRAP", "GUID", Encoding.UTF8.GetBytes(Misc.GetGuidString()));
+                    //Win32Res.WriteResourceData(exePath, "JWRAP", "JAR", jarData);
+                    //Win32Res.WriteResourceData(exePath, "JWRAP", "SHA512",
+                    //    Encoding.UTF8.GetBytes(Misc.GetSha512String(jarData)));
+                    //Win32Res.WriteResourceData(exePath, "JWRAP", "GUID", Encoding.UTF8.GetBytes(Misc.GetGuidString()));
                     string mainClass = options.main;
                     if (mainClass == null) mainClass = "global.Main";
-                    Win32Res.WriteResourceData(exePath, "JWRAP", "MAIN", Encoding.UTF8.GetBytes(mainClass));
+                    //Win32Res.WriteResourceData(exePath, "JWRAP", "MAIN", Encoding.UTF8.GetBytes(mainClass));
                     //Console.WriteLine(Convert.ToBase64String(jarData));
                     XElement root = new XElement("xml",
                         new XElement("main", mainClass),
