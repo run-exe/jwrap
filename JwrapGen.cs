@@ -60,26 +60,9 @@ public class JwrapGen
                     Win32Res.WriteResourceData(exePath, "JWRAP", "SHA512",
                         Encoding.UTF8.GetBytes(Misc.GetSha512String(jarData)));
                     Win32Res.WriteResourceData(exePath, "JWRAP", "GUID", Encoding.UTF8.GetBytes(Misc.GetGuidString()));
-                    if (options.main != null)
-                    {
-                        Console.WriteLine("[" + options.main + "]");
-                        ProcessStartInfo psi = new ProcessStartInfo("rcedit-x64.exe",
-                            $"\"{exePath}\" --set-resource-string 1 {options.main}");
-                        psi.RedirectStandardOutput = true;
-                        psi.RedirectStandardError = true;
-                        psi.UseShellExecute = false;
-                        psi.CreateNoWindow = true;
-                        Process process = new Process();
-                        process.StartInfo = psi;
-                        //var proc = Process.Start("rcedit-x64.exe", $"\"{exePath}\" --set-resource-string 1 {options.main}");
-                        process.Start();
-                        process.WaitForExit();
-                        if (process.ExitCode != 0)
-                        {
-                            //File.Delete(exePath);
-                            throw new Exception("rcedit-x64.exe failed");
-                        }
-                    }
+                    string mainClass = options.main;
+                    if (mainClass == null) mainClass = "global.Main";
+                    Win32Res.WriteResourceData(exePath, "JWRAP", "MAIN", Encoding.UTF8.GetBytes(mainClass));
                 });
             //SeparateMain(args);
         }

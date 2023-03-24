@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if false
+using System;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -33,3 +34,4 @@ public class Win32Api
         return s;
     }
 }
+#endif

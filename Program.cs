@@ -75,6 +75,7 @@ public static class Program
         string sha512 = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "SHA512"));
         Console.WriteLine($"guid={guid}");
         Console.WriteLine($"sha512={sha512}");
+        string mainClass = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "MAIN"));
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         //Console.WriteLine(profilePath);
         var rootPath = $"{profilePath}\\.jwap\\.jar";
@@ -89,8 +90,6 @@ public static class Program
         string java = $@"{jre}\bin\java.exe";
         Console.WriteLine(java);
         Console.WriteLine(File.Exists(java));
-        string mainClass = Win32Api.LoadString(1);
-        if (mainClass == "") mainClass = "global.Main";
         Console.WriteLine(mainClass);
         //string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
         ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarPath}\" {mainClass} {argList}");
