@@ -10,3 +10,5 @@ dotnet build -c Release jwrap-head.csproj
 cp -rp bin/Release/net462/jwrap-head.exe $HOME/cmd/
 dotnet build -c Release jwrapw-head.csproj
 cp -rp bin/Release/net462/jwrapw-head.exe $HOME/cmd/
+dotnet build -c Release jwrap-gen.csproj
+ilmerge /out:$HOME/cmd/jwrap-gen.exe /wildcards bin/Release/net462/jwrap-gen.exe bin/Release/net462/*.dll

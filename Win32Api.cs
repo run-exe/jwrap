@@ -17,7 +17,7 @@ public class Win32Api
         int longest = 0;
         int buffLen = 256;
         int length = 0;
-        IntPtr hInstance = Marshal.GetHINSTANCE(typeof(Program).Module);
+        IntPtr hInstance = Marshal.GetHINSTANCE(typeof(Win32Api).Module);
         StringBuilder sb;
         while (true)
         {
