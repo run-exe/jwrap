@@ -117,8 +117,21 @@ public static class Program
         //process.StartInfo.FileName = java;
         //process.StartInfo.Arguments = $"-cp \"{jarFile}\" global.Main {argList}";
         //process.StartInfo.UseShellExecute = false;
-        process.OutputDataReceived += (sender, e) => Console.WriteLine(e.Data);
-        process.ErrorDataReceived += (sender, e) => Console.WriteLine(e.Data);
+        process.OutputDataReceived += (sender, e) =>
+        {
+            Console.WriteLine(e.Data);
+            using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
+                writer.WriteLine(e.Data);
+            }
+        };
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            Console.WriteLine(e.Data);
+            using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
+                writer.WriteLine(e.Data);
+            }
+        };
+        File.Delete(Application.ExecutablePath+".log");
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
