@@ -120,18 +120,36 @@ public static class Program
         process.OutputDataReceived += (sender, e) =>
         {
             Console.WriteLine(e.Data);
-            using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
-                writer.WriteLine(e.Data);
+            try
+            {
+                using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
+                    writer.WriteLine(e.Data);
+                }
+            }
+            catch (Exception exception)
+            {
             }
         };
         process.ErrorDataReceived += (sender, e) =>
         {
             Console.WriteLine(e.Data);
-            using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
-                writer.WriteLine(e.Data);
+            try
+            {
+                using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
+                    writer.WriteLine(e.Data);
+                }
+            }
+            catch (Exception exception)
+            {
             }
         };
-        File.Delete(Application.ExecutablePath+".log");
+        try
+        {
+            File.Delete(Application.ExecutablePath+".log");
+        }
+        catch (Exception e)
+        {
+        }
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
