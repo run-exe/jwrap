@@ -159,27 +159,54 @@ public static class Program
 #else
     private static void SeparateMain(string[] args)
     {
-        string jarPath = args[0];
+        Console.WriteLine("(1)");
+        string jarPath = new FileInfo(args[0]).FullName;
+        jarPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(jarPath));
         ArraySegment<string> arySeg = new ArraySegment<string>(args, 1, args.Length - 1);
         args = arySeg.ToArray();
         string argList = "";
         for (int i = 0; i < args.Length; i++)
         {
-            if (i > 0) argList += " ";
-            argList += $"\"{args[i]}\"";
+            //if (i > 0) argList += " ";
+            //argList += $"\"{args[i]}\"";
+            if (i > 0) argList += ",";
+            argList += Convert.ToBase64String(Encoding.UTF8.GetBytes(args[i]));
         }
+        Console.WriteLine("["+argList+"]");
         string jre = PrepareJre("zulu17-jre-17.40.19");
         //Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";
         //Console.WriteLine(java);
         //Console.WriteLine(File.Exists(java));
+        string exeDir = Directory.GetParent(Application.ExecutablePath).FullName;
+        string bootJar = $"{exeDir}\\jwrap.boot.jar";
+        string mainClass = "global.Main";
+        mainClass = Convert.ToBase64String(Encoding.UTF8.GetBytes(mainClass));
+        
+        Console.WriteLine("(2)");
+        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{bootJar}\" jwrap.boot.App --jar {jarPath} --main {mainClass} --args \"{argList}\"");
+        psi.RedirectStandardOutput = true;
+        psi.RedirectStandardError = true;
+        psi.UseShellExecute = false;
+        psi.CreateNoWindow = true;
         Process process = new Process();
-        process.StartInfo.FileName = java;
-        process.StartInfo.Arguments = $"-cp \"{jarPath}\" global.Main {argList}";
-        process.StartInfo.UseShellExecute = false;
-        process.StartInfo.CreateNoWindow = true;
+        process.StartInfo = psi;
+
+        process.OutputDataReceived += (sender, e) =>
+        {
+            Console.WriteLine(e.Data);
+        };
+        process.ErrorDataReceived += (sender, e) =>
+        {
+            Console.WriteLine(e.Data);
+        };
+
+        Console.WriteLine("(3)");
         process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
         process.WaitForExit();
+        Console.WriteLine("(4)");
         Environment.Exit(process.ExitCode);
     }
 #endif
