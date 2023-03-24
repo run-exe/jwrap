@@ -20,15 +20,4 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
-  <ItemGroup>
-    <!--
-    <PackageReference Include="JavaCommons" Version="2023.322.410.44" />
-    <PackageReference Include="JavaCommons.Windows" Version="2023.322.417.23" />
-    <PackageReference Include="JavaCommons.Extra" Version="2023.201.2000.37" />
-    <PackageReference Include="Microsoft.ClearScript" Version="7.3.7" />
-    <PackageReference Include="NUnit" Version="3.*" />
-    <PackageReference Include="ServiceStack" Version="6.*" />
-    <PackageReference Include="LiteDB" Version="5.*" />
-    -->
-  </ItemGroup>
 </Project>

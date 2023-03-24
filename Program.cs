@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Net;
+using System.Windows.Forms;
 
 namespace jwrap;
 
@@ -51,14 +52,39 @@ public static class Program
             ZipFile.ExtractToDirectory(downloadPath, $"{installPath}+{timestamp}");
             Directory.Move($"{installPath}+{timestamp}", installPath);
         }
+
         return installPath;
     }
 
+#if JWRAP_HEAD
+    private static void SeparateMain(string[] args)
+    {
+        string argList = "";
+        for (int i = 0; i < args.Length; i++)
+        {
+            if (i > 0) argList += " ";
+            argList += $"\"{args[i]}\"";
+        }
+        string jre = PrepareJre("zulu17-jre-17.40.19");
+        //Console.WriteLine(jre);
+        string java = $@"{jre}\bin\java.exe";
+        //Console.WriteLine(java);
+        //Console.WriteLine(File.Exists(java));
+        Process process = new Process();
+        process.StartInfo.FileName = java;
+        process.StartInfo.Arguments = $"-cp \"{Application.ExecutablePath}\" global.Main {argList}";
+        process.StartInfo.UseShellExecute = false;
+        process.StartInfo.CreateNoWindow = true;
+        process.Start();
+        process.WaitForExit();
+        Environment.Exit(process.ExitCode);
+    }
+#else
     private static void SeparateMain(string[] args)
     {
         string jarPath = args[0];
         ArraySegment<string> arySeg = new ArraySegment<string>(args, 1, args.Length - 1);
-        string[] argsSlice = arySeg.ToArray();
+        args = arySeg.ToArray();
         string argList = "";
         for (int i = 0; i < args.Length; i++)
         {
@@ -79,6 +105,7 @@ public static class Program
         process.WaitForExit();
         Environment.Exit(process.ExitCode);
     }
+#endif
     private static void DownloadBinaryFromUrl(string url, string destinationPath)
     {
         WebRequest objRequest = System.Net.HttpWebRequest.Create(url);
