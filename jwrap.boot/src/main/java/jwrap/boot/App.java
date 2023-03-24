@@ -39,10 +39,14 @@ public class App {
 				break;
 			}
 		}
-		System.out.println("new File(jar).exists() = " + new File(jar).exists());
-		String parentDir = getParentDirPath(jar);
+		//String parentDir = getParentDirPath(jar);
 
 		try {
+			System.out.println("new File(jar).exists() = " + new File(jar).exists());
+			if (!new File(jar).exists())
+			{
+				throw new Exception("JAR file not exist: " + jar);
+			}
 			URL url = (new File(jar)).toURI().toURL();
 			URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { url });
 			Class<?> globalMain = classLoader.loadClass(main);
