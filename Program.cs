@@ -106,7 +106,7 @@ public static class Program
             foreach (var dll in dlls)
             {
                 Misc.Log("SeparateMain(3.3)");
-                Misc.Log(dll);
+                //Misc.Log(dll);
                 Misc.Log(dll.Elements().Count());
                 Misc.Log(dll.XPathSelectElement("./name"));
                 string dllName = dll.XPathSelectElement("./name").Value;
@@ -118,7 +118,7 @@ public static class Program
                 Misc.Log("SeparateMain(3.3.3)");
             }
             Misc.Log("SeparateMain(3.4)");
-            File.Move($"{jarPath}.{timestamp}", jarPath);
+            Directory.Move($"{jarPath}.{timestamp}", jarPath);
             Misc.Log("SeparateMain(3.5)");
         }
         Misc.Log("SeparateMain(4)");
@@ -130,7 +130,7 @@ public static class Program
         Misc.Log(mainClass);
         //string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
         Misc.Log("SeparateMain(5)");
-        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarPath}\" {mainClass} {argList}");
+        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarPath}\\main.jar\" {mainClass} {argList}");
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
         psi.UseShellExecute = false;
