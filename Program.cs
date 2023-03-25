@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Xml.XPath;
 
@@ -100,12 +101,13 @@ public static class Program
             string timestamp = GetTimeStampString();
             Directory.CreateDirectory($"{jarPath}.{timestamp}");
             Misc.WriteBinaryFile($"{jarPath}.{timestamp}\\main.jar", jarData);
-            var dlls = root.XPathSelectElements("//dlls");
+            var dlls = root.XPathSelectElements("//dll");
             Misc.Log("SeparateMain(3.2)");
             foreach (var dll in dlls)
             {
                 Misc.Log("SeparateMain(3.3)");
                 Misc.Log(dll);
+                Misc.Log(dll.Elements().Count());
                 Misc.Log(dll.XPathSelectElement("./name"));
                 string dllName = dll.XPathSelectElement("./name").Value;
                 Misc.Log("SeparateMain(3.3.1)");
