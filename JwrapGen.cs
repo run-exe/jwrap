@@ -40,6 +40,7 @@ public class JwrapGen
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(options =>
                 {
+                    string bootPath = exeDir + $"\\jwrap.boot.jar";
                     string windowSuffix = options.window ? "w" : "";
                     string headPath = exeDir + $"\\jwrap{windowSuffix}-head.exe";
                     Misc.Log(headPath);
@@ -54,15 +55,12 @@ public class JwrapGen
                         throw new Exception($"File not exist: {options.FilePath}");
                     }
 
+                    byte[] bootData = Misc.ReadBinaryFile(bootPath);
                     byte[] jarData = Misc.ReadBinaryFile(options.FilePath);
                     string exePath = Regex.Replace(options.FilePath, "[.]jar$", ".exe");
                     Misc.Log(exePath);
                     File.Delete(exePath);
                     File.Copy(headPath, exePath);
-                    //Win32Res.WriteResourceData(exePath, "JWRAP", "JAR", jarData);
-                    //Win32Res.WriteResourceData(exePath, "JWRAP", "SHA512",
-                    //    Encoding.UTF8.GetBytes(Misc.GetSha512String(jarData)));
-                    //Win32Res.WriteResourceData(exePath, "JWRAP", "GUID", Encoding.UTF8.GetBytes(Misc.GetGuidString()));
                     string mainClass = options.main;
                     if (mainClass == null) mainClass = "global.Main";
                     //Win32Res.WriteResourceData(exePath, "JWRAP", "MAIN", Encoding.UTF8.GetBytes(mainClass));
@@ -70,8 +68,16 @@ public class JwrapGen
                         new XElement("main", mainClass),
                         new XElement("guid", Misc.GetGuidString()),
                         new XElement("sha512", Misc.GetSha512String(jarData)),
+                        new XElement("boot", Convert.ToBase64String(bootData)),
                         new XElement("jar", Convert.ToBase64String(jarData))
                     );
+                    string jarDir = Directory.GetParent(options.FilePath).ToString();
+                    string[] files = Directory.GetFiles(jarDir, "*.dll"); // ディレクトリ内の".dll"で終わるファイル名の一覧を取得
+                    foreach (var file in files)
+                    {
+                        Misc.Log(file);
+                        Misc.Log(Path.GetFileName(file));
+                    }
                     XDocument doc = new XDocument(root);
                     Win32Res.WriteResourceData(exePath, "JWRAP", "XML", Encoding.UTF8.GetBytes(doc.ToString()));
                 });
