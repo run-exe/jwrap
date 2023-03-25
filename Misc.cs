@@ -82,4 +82,14 @@ public class Misc
         Array.Copy(fileData, position, buffer, 0, buffer.Length);
         return buffer;
     }
+
+    public static void PutLastUtf8Bytes(string filePath, byte[] bytes)
+    {
+        using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Write))
+        {
+            fs.Seek(fs.Length, SeekOrigin.Begin);
+            fs.WriteByte(0);
+            fs.Write(bytes, 0, bytes.Length);
+        }
+    }
 }
