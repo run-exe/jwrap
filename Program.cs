@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using System.Xml.XPath;
 
 #if !JWRAP_GEN
@@ -35,9 +36,15 @@ public static class Program
         return formatted;
     }
 
-    private static string PrepareJre(string name)
+    private static string UrlToStoreName(string url)
     {
-        string url = $"https://github.com/run-exe/jwrap/releases/download/jre/{name}.zip";
+        return Regex.Replace(url, "[^a-zA-z0-9-_.]", "!");
+    }
+
+    private static string PrepareJre(string url)
+    {
+        //string url = $"https://github.com/run-exe/jwrap/releases/download/jre/{name}.zip";
+        string name = UrlToStoreName(url);
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var rootPath = $"{profilePath}\\.jwap\\.jre";
         Directory.CreateDirectory(rootPath);
@@ -49,6 +56,7 @@ public static class Program
             DownloadBinaryFromUrl(url, downloadPath);
             ZipFile.ExtractToDirectory(downloadPath, $"{installPath}+{timestamp}");
             Directory.Move($"{installPath}+{timestamp}", installPath);
+            File.Delete(downloadPath);
         }
 
         return installPath;
@@ -92,8 +100,7 @@ public static class Program
             Misc.WriteBinaryFile($"{jarPath}.{timestamp}", jarData);
             File.Move($"{jarPath}.{timestamp}", jarPath);
         }
-        //string jre = PrepareJre("zulu17-jre-17.40.19");
-        string jre = PrepareJre("zulu8-jre-8.68.0.21");
+        string jre = PrepareJre(Constants.JRE_URL);
         Misc.Log(jre);
         string java = $@"{jre}\bin\java.exe";
         Misc.Log(java);
@@ -167,9 +174,7 @@ public static class Program
             argList += Convert.ToBase64String(Encoding.UTF8.GetBytes(args[i]));
         }
         Misc.Log("["+argList+"]");
-        string jre = PrepareJre("zulu17-jre-17.40.19");
-        //string jre = PrepareJre("zulu8-jre-8.68.0.21");
-        //https://github.com/run-exe/jwrap/releases/download/jre/zulu8-jre-8.68.0.21.zip
+        string jre = PrepareJre(Constants.JRE_URL);
         string java = $@"{jre}\bin\java.exe";
         string exeDir = Directory.GetParent(Application.ExecutablePath).FullName;
         string bootJar = $"{exeDir}\\jwrap.boot.jar";
