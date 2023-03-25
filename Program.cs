@@ -75,16 +75,8 @@ public static class Program
         }
 
         Misc.Log("SeparateMain(2)");
-        byte[] fileData = Misc.ReadBinaryFile(Application.ExecutablePath);
 #if false
-        using (FileStream fs = new FileStream(Application.ExecutablePath, FileMode.Open, FileAccess.Read))
-        {
-            using (BinaryReader br = new BinaryReader(fs))
-            {
-                fileData = br.ReadBytes((int)fs.Length);
-            }
-        }
-#endif
+        byte[] fileData = Misc.ReadBinaryFile(Application.ExecutablePath);
 
         long position = fileData.Length;
         while (position > 0)
@@ -99,6 +91,8 @@ public static class Program
 
         byte[] buffer = new byte[fileData.Length - position];
         Array.Copy(fileData, position, buffer, 0, buffer.Length);
+#endif
+        byte[] buffer = Misc.GetLastUtf8Bytes(Application.ExecutablePath);
         //string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
         string xml = Encoding.UTF8.GetString(buffer);
         XDocument doc = XDocument.Parse(xml);

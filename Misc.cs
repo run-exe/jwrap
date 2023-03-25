@@ -64,4 +64,22 @@ public class Misc
             return hashString;
         }
     }
+
+    public static byte[] GetLastUtf8Bytes(string filePath)
+    {
+        byte[] fileData = Misc.ReadBinaryFile(filePath);
+        long position = fileData.Length;
+        while (position > 0)
+        {
+            position--;
+            if (fileData[position] == 0)
+            {
+                position++;
+                break;
+            }
+        }
+        byte[] buffer = new byte[fileData.Length - position];
+        Array.Copy(fileData, position, buffer, 0, buffer.Length);
+        return buffer;
+    }
 }
