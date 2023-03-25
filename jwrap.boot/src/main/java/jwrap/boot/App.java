@@ -42,7 +42,6 @@ public class App {
 		//String parentDir = getParentDirPath(jar);
 
 		try {
-			System.out.println("new File(jar).exists() = " + new File(jar).exists());
 			if (!new File(jar).exists())
 			{
 				throw new Exception("JAR file not exist: " + jar);
