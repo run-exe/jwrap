@@ -22,7 +22,7 @@ public class Misc
     public static byte[] ReadBinaryFile(string filePath)
     {
         // ファイルを開く
-        using (FileStream fs = new FileStream(filePath, FileMode.Open))
+        using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
         {
             // バイナリデータを読み取る
             using (BinaryReader br = new BinaryReader(fs))

@@ -75,7 +75,8 @@ public static class Program
         }
 
         Misc.Log("SeparateMain(2)");
-        byte[] fileData;
+        byte[] fileData = Misc.ReadBinaryFile(Application.ExecutablePath);
+#if false
         using (FileStream fs = new FileStream(Application.ExecutablePath, FileMode.Open, FileAccess.Read))
         {
             using (BinaryReader br = new BinaryReader(fs))
@@ -83,6 +84,7 @@ public static class Program
                 fileData = br.ReadBytes((int)fs.Length);
             }
         }
+#endif
 
         long position = fileData.Length;
         while (position > 0)
