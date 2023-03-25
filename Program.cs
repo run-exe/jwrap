@@ -65,6 +65,7 @@ public static class Program
 #if JWRAP_HEAD
     private static void SeparateMain(string[] args)
     {
+        Misc.Log("SeparateMain(1)");
         string argList = "";
         for (int i = 0; i < args.Length; i++)
         {
@@ -72,6 +73,7 @@ public static class Program
             argList += $"\"{args[i]}\"";
         }
 
+        Misc.Log("SeparateMain(2)");
         string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
         XDocument doc = XDocument.Parse(xml);
         var root = doc.Root;
@@ -91,6 +93,7 @@ public static class Program
         //string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}.jar";
         string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}";
         Misc.Log(jarPath);
+        Misc.Log("SeparateMain(3)");
         if (!Directory.Exists(jarPath))
         {
             string timestamp = GetTimeStampString();
@@ -106,6 +109,7 @@ public static class Program
             }
             File.Move($"{jarPath}.{timestamp}", jarPath);
         }
+        Misc.Log("SeparateMain(4)");
         string jre = PrepareJre(Constants.JRE_URL);
         Misc.Log(jre);
         string java = $@"{jre}\bin\java.exe";
@@ -113,6 +117,7 @@ public static class Program
         Misc.Log(File.Exists(java));
         Misc.Log(mainClass);
         //string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
+        Misc.Log("SeparateMain(5)");
         ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarPath}\" {mainClass} {argList}");
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
@@ -150,6 +155,7 @@ public static class Program
             {
             }
         };
+        Misc.Log("SeparateMain(6)");
         try
         {
             File.Delete(Application.ExecutablePath+".log");
@@ -157,10 +163,12 @@ public static class Program
         catch (Exception /*e*/)
         {
         }
+        Misc.Log("SeparateMain(7)");
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         process.WaitForExit();
+        Misc.Log("SeparateMain(8)");
         Environment.Exit(process.ExitCode);
     }
 #else
