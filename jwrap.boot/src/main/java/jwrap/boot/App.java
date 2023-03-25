@@ -15,26 +15,26 @@ import java.util.Base64;
 
 public class App {
 	public static void main(String[] args) {
-		//System.out.println("java.library.path=" + System.getProperty("java.library.path"));
+		boolean debug = false;
 		String jar = null;
 		String main = null;
 		String[] arguments = null;
 		for (int i = 0; i < args.length; i++) {
-			System.out.println(args[i]);
 			switch (args[i]) {
+			case "--debug":
+				debug = (args[i + 1].toLowerCase()=="true");
+				i++;
+				break;
 			case "--jar":
 				jar = parseStringArg(args[i + 1]);
-				System.out.println(jar);
 				i++;
 				break;
 			case "--main":
 				main = parseStringArg(args[i + 1]);
-				System.out.println(main);
 				i++;
 				break;
 			case "--args":
 				arguments = parseStringArrayArg(args[i + 1]);
-				System.out.println(String.join(",", arguments));
 				i++;
 				break;
 			}

@@ -2,11 +2,20 @@
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml.Linq;
 
 namespace jwrap;
 
 public class Misc
 {
+    public static void Log(object msg)
+    {
+        if (Constants.DEBUG)
+        {
+            Console.Error.WriteLine(msg);
+        }
+    }
+
     public static byte[] ReadBinaryFile(string filePath)
     {
         // ファイルを開く

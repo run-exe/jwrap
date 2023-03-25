@@ -36,14 +36,14 @@ public class JwrapGen
         try
         {
             string exeDir = Directory.GetParent(Application.ExecutablePath).FullName;
-            Console.WriteLine(Directory.GetParent(Application.ExecutablePath));
+            Misc.Log(Directory.GetParent(Application.ExecutablePath));
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed<Options>(options =>
                 {
                     string windowSuffix = options.window ? "w" : "";
                     string headPath = exeDir + $"\\jwrap{windowSuffix}-head.exe";
-                    Console.WriteLine(headPath);
-                    Console.WriteLine(options.FilePath);
+                    Misc.Log(headPath);
+                    Misc.Log(options.FilePath);
                     if (!options.FilePath.EndsWith(".jar"))
                     {
                         throw new Exception($"File is not jar: {options.FilePath}");
@@ -56,7 +56,7 @@ public class JwrapGen
 
                     byte[] jarData = Misc.ReadBinaryFile(options.FilePath);
                     string exePath = Regex.Replace(options.FilePath, "[.]jar$", ".exe");
-                    Console.WriteLine(exePath);
+                    Misc.Log(exePath);
                     File.Delete(exePath);
                     File.Copy(headPath, exePath);
                     //Win32Res.WriteResourceData(exePath, "JWRAP", "JAR", jarData);
@@ -66,7 +66,6 @@ public class JwrapGen
                     string mainClass = options.main;
                     if (mainClass == null) mainClass = "global.Main";
                     //Win32Res.WriteResourceData(exePath, "JWRAP", "MAIN", Encoding.UTF8.GetBytes(mainClass));
-                    //Console.WriteLine(Convert.ToBase64String(jarData));
                     XElement root = new XElement("xml",
                         new XElement("main", mainClass),
                         new XElement("guid", Misc.GetGuidString()),
@@ -74,14 +73,13 @@ public class JwrapGen
                         new XElement("jar", Convert.ToBase64String(jarData))
                     );
                     XDocument doc = new XDocument(root);
-                    //Console.WriteLine(doc.ToString());
                     Win32Res.WriteResourceData(exePath, "JWRAP", "XML", Encoding.UTF8.GetBytes(doc.ToString()));
                 });
             //SeparateMain(args);
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.Error.WriteLine(e.ToString());
         }
     }
 }

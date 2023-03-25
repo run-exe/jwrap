@@ -24,7 +24,7 @@ public static class Program
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.ToString());
+            Console.Error.WriteLine(e.ToString());
         }
     }
 
@@ -38,17 +38,12 @@ public static class Program
     private static string PrepareJre(string name)
     {
         string url = $"https://github.com/run-exe/jwrap/releases/download/jre/{name}.zip";
-        //Console.WriteLine(url);
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        //Console.WriteLine(profilePath);
         var rootPath = $"{profilePath}\\.jwap\\.jre";
-        //Console.WriteLine(rootPath);
         Directory.CreateDirectory(rootPath);
         string timestamp = GetTimeStampString();
         string downloadPath = $"{rootPath}\\{name}+{timestamp}.zip";
-        //Console.WriteLine(downloadPath);
         string installPath = $"{rootPath}\\{name}";
-        //Console.WriteLine(installPath);
         if (!Directory.Exists(installPath))
         {
             DownloadBinaryFromUrl(url, downloadPath);
@@ -71,28 +66,26 @@ public static class Program
 
         string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
         XDocument doc = XDocument.Parse(xml);
-        //Console.WriteLine(doc.ToString());
         var root = doc.Root;
-        Console.WriteLine(root.XPathSelectElement("./main"));
-        Console.WriteLine(root.XPathSelectElement("./guid"));
-        Console.WriteLine(root.XPathSelectElement("./sha512"));
+        Misc.Log(root.XPathSelectElement("./main"));
+        Misc.Log(root.XPathSelectElement("./guid"));
+        Misc.Log(root.XPathSelectElement("./sha512"));
         //byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
         byte[] jarData = Convert.FromBase64String(root.XPathSelectElement("./jar").Value);
-        Console.WriteLine($"jarData={jarData.Length}");
+        Misc.Log($"jarData={jarData.Length}");
         //string guid = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID"));
         string guid = root.XPathSelectElement("./guid").Value;
         //string sha512 = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "SHA512"));
         string sha512 = root.XPathSelectElement("./sha512").Value;
-        Console.WriteLine($"guid={guid}");
-        Console.WriteLine($"sha512={sha512}");
+        Misc.Log($"guid={guid}");
+        Misc.Log($"sha512={sha512}");
         //string mainClass = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "MAIN"));
         string mainClass = root.XPathSelectElement("./main").Value;
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        //Console.WriteLine(profilePath);
         var rootPath = $"{profilePath}\\.jwap\\.jar";
         Directory.CreateDirectory(rootPath);
         string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}.jar";
-        Console.WriteLine(jarPath);
+        Misc.Log(jarPath);
         if (!File.Exists(jarPath))
         {
             string timestamp = GetTimeStampString();
@@ -101,11 +94,11 @@ public static class Program
         }
         //string jre = PrepareJre("zulu17-jre-17.40.19");
         string jre = PrepareJre("zulu8-jre-8.68.0.21");
-        Console.WriteLine(jre);
+        Misc.Log(jre);
         string java = $@"{jre}\bin\java.exe";
-        Console.WriteLine(java);
-        Console.WriteLine(File.Exists(java));
-        Console.WriteLine(mainClass);
+        Misc.Log(java);
+        Misc.Log(File.Exists(java));
+        Misc.Log(mainClass);
         //string jarFile = Regex.Replace(Application.ExecutablePath, "[.][eE][xX][eE]$", ".jar");
         ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{jarPath}\" {mainClass} {argList}");
         psi.RedirectStandardOutput = true;
@@ -127,7 +120,7 @@ public static class Program
                     writer.WriteLine(e.Data);
                 }
             }
-            catch (Exception exception)
+            catch (Exception /*exception*/)
             {
             }
         };
@@ -140,7 +133,7 @@ public static class Program
                     writer.WriteLine(e.Data);
                 }
             }
-            catch (Exception exception)
+            catch (Exception /*exception*/)
             {
             }
         };
@@ -148,7 +141,7 @@ public static class Program
         {
             File.Delete(Application.ExecutablePath+".log");
         }
-        catch (Exception e)
+        catch (Exception /*e*/)
         {
         }
         process.Start();
@@ -160,7 +153,7 @@ public static class Program
 #else
     private static void SeparateMain(string[] args)
     {
-        Console.WriteLine("(1)");
+        Misc.Log("(1)");
         string jarPath = new FileInfo(args[0]).FullName;
         jarPath = Convert.ToBase64String(Encoding.UTF8.GetBytes(jarPath));
         ArraySegment<string> arySeg = new ArraySegment<string>(args, 1, args.Length - 1);
@@ -173,21 +166,18 @@ public static class Program
             if (i > 0) argList += ",";
             argList += Convert.ToBase64String(Encoding.UTF8.GetBytes(args[i]));
         }
-        Console.WriteLine("["+argList+"]");
+        Misc.Log("["+argList+"]");
         string jre = PrepareJre("zulu17-jre-17.40.19");
         //string jre = PrepareJre("zulu8-jre-8.68.0.21");
         //https://github.com/run-exe/jwrap/releases/download/jre/zulu8-jre-8.68.0.21.zip
-        //Console.WriteLine(jre);
         string java = $@"{jre}\bin\java.exe";
-        //Console.WriteLine(java);
-        //Console.WriteLine(File.Exists(java));
         string exeDir = Directory.GetParent(Application.ExecutablePath).FullName;
         string bootJar = $"{exeDir}\\jwrap.boot.jar";
         string mainClass = "global.Main";
         mainClass = Convert.ToBase64String(Encoding.UTF8.GetBytes(mainClass));
         
-        Console.WriteLine("(2)");
-        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{bootJar}\" jwrap.boot.App --jar {jarPath} --main {mainClass} --args \"{argList}\"");
+        Misc.Log("(2)");
+        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{bootJar}\" jwrap.boot.App --debug {Constants.DEBUG} --jar {jarPath} --main {mainClass} --args \"{argList}\"");
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
         psi.UseShellExecute = false;
@@ -204,12 +194,12 @@ public static class Program
             Console.WriteLine(e.Data);
         };
 
-        Console.WriteLine("(3)");
+        Misc.Log("(3)");
         process.Start();
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         process.WaitForExit();
-        Console.WriteLine("(4)");
+        Misc.Log("(4)");
         Environment.Exit(process.ExitCode);
     }
 #endif
