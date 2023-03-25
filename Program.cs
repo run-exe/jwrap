@@ -96,18 +96,28 @@ public static class Program
         Misc.Log("SeparateMain(3)");
         if (!Directory.Exists(jarPath))
         {
+            Misc.Log("SeparateMain(3.1)");
             string timestamp = GetTimeStampString();
             Directory.CreateDirectory($"{jarPath}.{timestamp}");
             Misc.WriteBinaryFile($"{jarPath}.{timestamp}\\main.jar", jarData);
             var dlls = root.XPathSelectElements("//dlls");
+            Misc.Log("SeparateMain(3.2)");
             foreach (var dll in dlls)
             {
+                Misc.Log("SeparateMain(3.3)");
+                Misc.Log(dll);
+                Misc.Log(dll.XPathSelectElement("./name"));
                 string dllName = dll.XPathSelectElement("./name").Value;
+                Misc.Log("SeparateMain(3.3.1)");
                 byte[] dllBinary = Convert.FromBase64String(dll.XPathSelectElement("./binary").Value);
+                Misc.Log("SeparateMain(3.3.2)");
                 Misc.Log($"Writing {dllName}");
                 Misc.WriteBinaryFile($"{jarPath}.{timestamp}\\{dllName}", dllBinary);
+                Misc.Log("SeparateMain(3.3.3)");
             }
+            Misc.Log("SeparateMain(3.4)");
             File.Move($"{jarPath}.{timestamp}", jarPath);
+            Misc.Log("SeparateMain(3.5)");
         }
         Misc.Log("SeparateMain(4)");
         string jre = PrepareJre(Constants.JRE_URL);

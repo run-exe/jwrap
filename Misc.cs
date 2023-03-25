@@ -12,7 +12,10 @@ public class Misc
     {
         if (Constants.DEBUG)
         {
-            Console.Error.WriteLine(msg);
+            if (msg == null)
+                Console.Error.WriteLine("null");
+            else
+                Console.Error.WriteLine(msg);
         }
     }
 
