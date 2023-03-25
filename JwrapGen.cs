@@ -71,13 +71,20 @@ public class JwrapGen
                         new XElement("boot", Convert.ToBase64String(bootData)),
                         new XElement("jar", Convert.ToBase64String(jarData))
                     );
+                    XElement dlls = new XElement("dlls");
                     string jarDir = Directory.GetParent(options.FilePath).ToString();
                     string[] files = Directory.GetFiles(jarDir, "*.dll"); // ディレクトリ内の".dll"で終わるファイル名の一覧を取得
                     foreach (var file in files)
                     {
                         Misc.Log(file);
                         Misc.Log(Path.GetFileName(file));
+                        XElement dll = new XElement("dll",
+                            new XElement("name", Path.GetFileName(file)),
+                            new XElement("binary", Convert.ToBase64String(Misc.ReadBinaryFile(file)))
+                        );
+                        dlls.Add(dll);
                     }
+                    root.Add(dlls);
                     XDocument doc = new XDocument(root);
                     Win32Res.WriteResourceData(exePath, "JWRAP", "XML", Encoding.UTF8.GetBytes(doc.ToString()));
                 });

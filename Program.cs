@@ -78,26 +78,32 @@ public static class Program
         Misc.Log(root.XPathSelectElement("./main"));
         Misc.Log(root.XPathSelectElement("./guid"));
         Misc.Log(root.XPathSelectElement("./sha512"));
-        //byte[] jarData = Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "JAR");
         byte[] jarData = Convert.FromBase64String(root.XPathSelectElement("./jar").Value);
         Misc.Log($"jarData={jarData.Length}");
-        //string guid = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "GUID"));
         string guid = root.XPathSelectElement("./guid").Value;
-        //string sha512 = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "SHA512"));
         string sha512 = root.XPathSelectElement("./sha512").Value;
         Misc.Log($"guid={guid}");
         Misc.Log($"sha512={sha512}");
-        //string mainClass = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "MAIN"));
         string mainClass = root.XPathSelectElement("./main").Value;
         var profilePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var rootPath = $"{profilePath}\\.jwap\\.jar";
         Directory.CreateDirectory(rootPath);
-        string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}.jar";
+        //string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}.jar";
+        string jarPath = $"{rootPath}\\{Path.GetFileNameWithoutExtension(Application.ExecutablePath)}+{guid}+{sha512}";
         Misc.Log(jarPath);
-        if (!File.Exists(jarPath))
+        if (!Directory.Exists(jarPath))
         {
             string timestamp = GetTimeStampString();
-            Misc.WriteBinaryFile($"{jarPath}.{timestamp}", jarData);
+            Directory.CreateDirectory($"{jarPath}.{timestamp}");
+            Misc.WriteBinaryFile($"{jarPath}.{timestamp}\\main.jar", jarData);
+            var dlls = root.XPathSelectElements("//dlls");
+            foreach (var dll in dlls)
+            {
+                string dllName = dll.XPathSelectElement("./name").Value;
+                byte[] dllBinary = Convert.FromBase64String(dll.XPathSelectElement("./binary").Value);
+                Misc.Log($"Writing {dllName}");
+                Misc.WriteBinaryFile($"{jarPath}.{timestamp}\\{dllName}", dllBinary);
+            }
             File.Move($"{jarPath}.{timestamp}", jarPath);
         }
         string jre = PrepareJre(Constants.JRE_URL);
