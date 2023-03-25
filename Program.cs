@@ -75,7 +75,30 @@ public static class Program
         }
 
         Misc.Log("SeparateMain(2)");
-        string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
+        byte[] fileData;
+        using (FileStream fs = new FileStream(Application.ExecutablePath, FileMode.Open, FileAccess.Read))
+        {
+            using (BinaryReader br = new BinaryReader(fs))
+            {
+                fileData = br.ReadBytes((int)fs.Length);
+            }
+        }
+
+        long position = fileData.Length;
+        while (position > 0)
+        {
+            position--;
+            if (fileData[position] == 0)
+            {
+                position++;
+                break;
+            }
+        }
+
+        byte[] buffer = new byte[fileData.Length - position];
+        Array.Copy(fileData, position, buffer, 0, buffer.Length);
+        //string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
+        string xml = Encoding.UTF8.GetString(buffer);
         XDocument doc = XDocument.Parse(xml);
         var root = doc.Root;
         Misc.Log(root.XPathSelectElement("./main"));
@@ -117,10 +140,12 @@ public static class Program
                 Misc.WriteBinaryFile($"{jarPath}.{timestamp}\\{dllName}", dllBinary);
                 Misc.Log("SeparateMain(3.3.3)");
             }
+
             Misc.Log("SeparateMain(3.4)");
             Directory.Move($"{jarPath}.{timestamp}", jarPath);
             Misc.Log("SeparateMain(3.5)");
         }
+
         Misc.Log("SeparateMain(4)");
         string jre = PrepareJre(Constants.JRE_URL);
         Misc.Log(jre);
@@ -146,7 +171,8 @@ public static class Program
             Console.WriteLine(e.Data);
             try
             {
-                using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
+                using (StreamWriter writer = File.AppendText(Application.ExecutablePath + ".log"))
+                {
                     writer.WriteLine(e.Data);
                 }
             }
@@ -159,7 +185,8 @@ public static class Program
             Console.WriteLine(e.Data);
             try
             {
-                using (StreamWriter writer = File.AppendText(Application.ExecutablePath+".log")) {
+                using (StreamWriter writer = File.AppendText(Application.ExecutablePath + ".log"))
+                {
                     writer.WriteLine(e.Data);
                 }
             }
@@ -170,11 +197,12 @@ public static class Program
         Misc.Log("SeparateMain(6)");
         try
         {
-            File.Delete(Application.ExecutablePath+".log");
+            File.Delete(Application.ExecutablePath + ".log");
         }
         catch (Exception /*e*/)
         {
         }
+
         Misc.Log("SeparateMain(7)");
         process.Start();
         process.BeginOutputReadLine();
@@ -208,7 +236,8 @@ public static class Program
         mainClass = Convert.ToBase64String(Encoding.UTF8.GetBytes(mainClass));
         
         Misc.Log("(2)");
-        ProcessStartInfo psi = new ProcessStartInfo(java, $"-cp \"{bootJar}\" jwrap.boot.App --debug {Constants.DEBUG} --jar {jarPath} --main {mainClass} --args \"{argList}\"");
+        ProcessStartInfo psi =
+ new ProcessStartInfo(java, $"-cp \"{bootJar}\" jwrap.boot.App --debug {Constants.DEBUG} --jar {jarPath} --main {mainClass} --args \"{argList}\"");
         psi.RedirectStandardOutput = true;
         psi.RedirectStandardError = true;
         psi.UseShellExecute = false;

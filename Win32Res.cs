@@ -1,4 +1,5 @@
-﻿namespace jwrap;
+﻿#if false
+namespace jwrap;
 
 using System;
 using System.Runtime.InteropServices;
@@ -90,3 +91,4 @@ public class Win32Res
         return buffer;
     }
 }
+#endif

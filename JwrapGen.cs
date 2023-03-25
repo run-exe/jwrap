@@ -86,7 +86,14 @@ public class JwrapGen
                     }
                     root.Add(dlls);
                     XDocument doc = new XDocument(root);
-                    Win32Res.WriteResourceData(exePath, "JWRAP", "XML", Encoding.UTF8.GetBytes(doc.ToString()));
+                    byte[] docBytes = Encoding.UTF8.GetBytes(doc.ToString());
+                    using (FileStream fs = new FileStream(exePath, FileMode.Open, FileAccess.ReadWrite))
+                    {
+                        fs.Seek(fs.Length, SeekOrigin.Begin);
+                        fs.WriteByte(0);
+                        fs.Write(docBytes, 0, docBytes.Length);
+                    }
+                    //Win32Res.WriteResourceData(exePath, "JWRAP", "XML", Encoding.UTF8.GetBytes(doc.ToString()));
                 });
             //SeparateMain(args);
         }
