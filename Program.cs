@@ -129,10 +129,11 @@ public static class Program
         string jre = PrepareJre(Constants.JRE_URL);
         Misc.Log(jre);
 
-        JniUtil.RunClassMain(jre, $"{jre}\\bin\\server\\jvm.dll", mainClass, args, new string[] { $"{jarPath}\\main.jar" });
+        JniUtil.RunClassMain(jre, mainClass, args, new string[] { $"{jarPath}\\main.jar" });
 
         return;
         
+#if false
         string java = $@"{jre}\bin\java.exe";
         Misc.Log(java);
         Misc.Log(File.Exists(java));
@@ -194,6 +195,7 @@ public static class Program
         process.WaitForExit();
         Misc.Log("SeparateMain(8)");
         Environment.Exit(process.ExitCode);
+#endif
     }
 #else
     private static void SeparateMain(string[] args)

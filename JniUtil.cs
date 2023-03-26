@@ -18,7 +18,7 @@ public class JniUtil
     [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
     delegate int run_class_main_proto(string x);
 
-    public static int RunClassMain(string jreRoot, string jvmDll, string mainClass, string[] args, string[] classPaths)
+    public static int RunClassMain(string jreRoot, string mainClass, string[] args, string[] classPaths)
     {
         IntPtr hModule = LoadLibraryW(@"C:\Users\Public\root\.repo\base2\java\jwrap-jre\jwrap-jre.dll");
         if (hModule == IntPtr.Zero)
@@ -53,7 +53,7 @@ public class JniUtil
         items.Add(new XElement("item", "いいい"));
         XElement root = new XElement("root",
             new XElement("jre", jreRoot),
-            new XElement("jvm", jvmDll),
+            //new XElement("jvm", jvmDll),
             new XElement("main", mainClass),
             items, argsElem, classpathElem);
         XDocument doc = new XDocument(root);
