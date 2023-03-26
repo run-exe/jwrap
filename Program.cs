@@ -129,7 +129,7 @@ public static class Program
         string jre = PrepareJre(Constants.JRE_URL);
         Misc.Log(jre);
 
-        JniUtil.RunClassMain($"{jre}\\bin\\server\\jvm.dll", mainClass, args, new string[] { $"{jarPath}\\main.jar" });
+        JniUtil.RunClassMain(jre, $"{jre}\\bin\\server\\jvm.dll", mainClass, args, new string[] { $"{jarPath}\\main.jar" });
 
         return;
         
