@@ -75,23 +75,6 @@ public static class Program
         }
 
         Misc.Log("SeparateMain(2)");
-#if false
-        byte[] fileData = Misc.ReadBinaryFile(Application.ExecutablePath);
-
-        long position = fileData.Length;
-        while (position > 0)
-        {
-            position--;
-            if (fileData[position] == 0)
-            {
-                position++;
-                break;
-            }
-        }
-
-        byte[] buffer = new byte[fileData.Length - position];
-        Array.Copy(fileData, position, buffer, 0, buffer.Length);
-#endif
         byte[] buffer = Misc.GetLastUtf8Bytes(Application.ExecutablePath);
         //string xml = Encoding.UTF8.GetString(Win32Res.ReadResourceData(Application.ExecutablePath, "JWRAP", "XML"));
         string xml = Encoding.UTF8.GetString(buffer);
@@ -145,6 +128,11 @@ public static class Program
         Misc.Log("SeparateMain(4)");
         string jre = PrepareJre(Constants.JRE_URL);
         Misc.Log(jre);
+
+        JniUtil.RunClassMain($"{jre}\\bin\\server\\jvm.dll", mainClass, args, new string[] { $"{jarPath}\\main.jar" });
+
+        return;
+        
         string java = $@"{jre}\bin\java.exe";
         Misc.Log(java);
         Misc.Log(File.Exists(java));
